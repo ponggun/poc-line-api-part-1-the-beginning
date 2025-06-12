@@ -1,11 +1,10 @@
 using PocLineAPI.Domain.Interfaces;
-using Application.Interfaces;
-using Application.Services;
-using Infrastructure.Repositories;
-using Infrastructure.Services;
-using Services;
+using PocLineAPI.Application.Interfaces;
+using PocLineAPI.Application.Services;
+using PocLineAPI.Infrastructure.Repositories;
+using PocLineAPI.Infrastructure.Services;
+using PocLineAPI.Presentation.WebApp.Services;
 using Serilog;
-using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,4 +1,4 @@
-# Qdrant Clean Code POC
+# Clean Code POC
 
 This project demonstrates the implementation of a semantic search application using Qdrant vector database with Clean Architecture principles.
 
