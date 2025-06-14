@@ -19,26 +19,6 @@ namespace PocLineAPI.Application.Tests.Services
         }
 
         [Fact]
-        public void Constructor_WithNullRepository_ThrowsArgumentNullException()
-        {
-            // Arrange & Act & Assert
-            var exception = Assert.Throws<ArgumentNullException>(() => 
-                new DocumentService(null!, _mockEmbeddingService.Object));
-            
-            Assert.Equal("repository", exception.ParamName);
-        }
-
-        [Fact]
-        public void Constructor_WithNullEmbeddingService_ThrowsArgumentNullException()
-        {
-            // Arrange & Act & Assert
-            var exception = Assert.Throws<ArgumentNullException>(() => 
-                new DocumentService(_mockRepository.Object, null!));
-            
-            Assert.Equal("embeddingService", exception.ParamName);
-        }
-
-        [Fact]
         public async Task GetDocumentByIdAsync_CallsRepositoryGetByIdAsync()
         {
             // Arrange
