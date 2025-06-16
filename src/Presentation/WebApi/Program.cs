@@ -3,6 +3,8 @@ using PocLineAPI.Application.Interfaces;
 using PocLineAPI.Application.Services;
 using PocLineAPI.Infrastructure.Repositories;
 using PocLineAPI.Infrastructure.Services;
+using PocLineAPI.Infrastructure.Configuration;
+using MongoDB.Driver;
 using Serilog;
 using System.IO;
 
@@ -26,9 +28,22 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configure MongoDB
+builder.Services.Configure<MongoDbSettings>(
+    builder.Configuration.GetSection(MongoDbSettings.SectionName));
+
+builder.Services.AddSingleton<IMongoClient>(serviceProvider =>
+{
+    var settings = builder.Configuration.GetSection(MongoDbSettings.SectionName).Get<MongoDbSettings>()
+        ?? throw new InvalidOperationException("MongoDbSettings not configured");
+    return new MongoClient(settings.ConnectionString);
+});
+
 // Register application services
 builder.Services.AddScoped<IEmbeddingService, OpenAIEmbeddingService>();
-builder.Services.AddScoped<IRepository, QdrantRepository>();
+builder.Services.AddScoped<IRepository, MongoDbRepository>();
+builder.Services.AddScoped<ILineEventRepository, MongoDbLineEventRepository>();
+builder.Services.AddScoped<ILineMessageRepository, MongoDbLineMessageRepository>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
 
 try
