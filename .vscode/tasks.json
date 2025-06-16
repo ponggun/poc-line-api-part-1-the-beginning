@@ -15,19 +15,7 @@
 			"group": "none"
 		},
 		{
-			"label": "3. Run:evaluator",
-			"type": "shell",
-			"command": "dotnet run --project src/4.Presentation/7.Evaluator/PocLineAPI.Presentation.Evaluator.csproj",
-			"group": "none"
-		},
-		{
-			"label": "4. Run:webapp",
-			"type": "shell",
-			"command": "dotnet run --project src/4.Presentation/6.WebApp/PocLineAPI.Presentation.WebApp.csproj",
-			"group": "none"
-		},
-		{
-			"label": "5. Test:application",
+			"label": "3. Test:application",
 			"type": "shell",
 			"command": "dotnet test tests/Application.Tests/PocLineAPI.Application.Tests.csproj",
 			"group": "test"
