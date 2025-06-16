@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\Domain\PocLineAPI.Domain.csproj" />
+    <ProjectReference Include="..\1.Domain\PocLineAPI.Domain.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

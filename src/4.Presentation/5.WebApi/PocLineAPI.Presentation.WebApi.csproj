@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Application\PocLineAPI.Application.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\PocLineAPI.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\2.Application\PocLineAPI.Application.csproj" />
+    <ProjectReference Include="..\..\3.Infrastructure\PocLineAPI.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

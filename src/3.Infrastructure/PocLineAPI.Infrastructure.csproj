@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\Domain\PocLineAPI.Domain.csproj" />
-    <ProjectReference Include="..\Application\PocLineAPI.Application.csproj" />
+    <ProjectReference Include="..\1.Domain\PocLineAPI.Domain.csproj" />
+    <ProjectReference Include="..\2.Application\PocLineAPI.Application.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

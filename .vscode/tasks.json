@@ -11,19 +11,19 @@
 		{
 			"label": "2. Run:webapi",
 			"type": "shell",
-			"command": "dotnet run --project src/Presentation/WebApi/PocLineAPI.Presentation.WebApi.csproj",
+			"command": "dotnet run --project src/4.Presentation/5.WebApi/PocLineAPI.Presentation.WebApi.csproj",
 			"group": "none"
 		},
 		{
 			"label": "3. Run:evaluator",
 			"type": "shell",
-			"command": "dotnet run --project src/Presentation/Evaluator/PocLineAPI.Presentation.Evaluator.csproj",
+			"command": "dotnet run --project src/4.Presentation/7.Evaluator/PocLineAPI.Presentation.Evaluator.csproj",
 			"group": "none"
 		},
 		{
 			"label": "4. Run:webapp",
 			"type": "shell",
-			"command": "dotnet run --project src/Presentation/WebApp/PocLineAPI.Presentation.WebApp.csproj",
+			"command": "dotnet run --project src/4.Presentation/6.WebApp/PocLineAPI.Presentation.WebApp.csproj",
 			"group": "none"
 		},
 		{

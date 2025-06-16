@@ -39,7 +39,7 @@ namespace PocLineAPI.Application.Services
             return await _repository.GetByIdAsync(id);
         }
 
-        public async Task<IEnumerable<Document>> SearchSimilarDocumentsAsync(string query, int limit = 5)
+        public Task<IEnumerable<Document>> SearchSimilarDocumentsAsync(string query, int limit = 5)
         {
             // Business logic for semantic search would go here
             // This is a placeholder implementation
