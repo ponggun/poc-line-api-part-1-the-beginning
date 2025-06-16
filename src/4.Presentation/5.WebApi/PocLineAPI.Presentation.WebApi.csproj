@@ -17,4 +17,8 @@
     <ProjectReference Include="..\..\3.Infrastructure\PocLineAPI.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Logs/" />
+  </ItemGroup>
+
 </Project>

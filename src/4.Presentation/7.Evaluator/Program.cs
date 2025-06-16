@@ -14,14 +14,17 @@ namespace PocLineAPI.Presentation.Evaluator
     {
         public static async Task Main(string[] args)
         {
-            // Setup Serilog
-            string logDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Logs", DateTime.Now.ToString("yyyyMMddHHmm"));
-            Directory.CreateDirectory(logDirectory);
-
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .WriteTo.Console()
-                .WriteTo.File(Path.Combine(logDirectory, "log.txt"), rollingInterval: RollingInterval.Hour)
+                .WriteTo.File(
+                    path: "src/4.Presentation/7.Evaluator/Logs/log-.txt",
+                    rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 31, // Keep logs for the last 31 days
+                    rollOnFileSizeLimit: true,
+                    fileSizeLimitBytes: 10_000_000, // Optional: Limit file size (10MB per file)
+                    shared: true
+                )
                 .CreateLogger();
 
             Log.Information("Starting Qdrant Document Evaluator");
@@ -51,7 +54,7 @@ namespace PocLineAPI.Presentation.Evaluator
                 Console.Write("\nYour choice: ");
 
                 var choice = Console.ReadLine();
-                
+
                 switch (choice)
                 {
                     case "1":
@@ -97,7 +100,7 @@ namespace PocLineAPI.Presentation.Evaluator
             var document = new Document(id, content);
             Log.Information("Attempting to add document with ID: {Id}", id);
             var result = await documentService.CreateDocumentAsync(document);
-            
+
             if (result)
             {
                 Log.Information("Document added successfully with ID: {Id}", id);
@@ -121,10 +124,10 @@ namespace PocLineAPI.Presentation.Evaluator
             try
             {
                 var results = await documentService.SearchSimilarDocumentsAsync(query);
-                
+
                 Log.Information("Search completed. Found {Count} results", results.Count());
                 Console.WriteLine($"\nFound {results.Count()} results:");
-                
+
                 foreach (var doc in results)
                 {
                     Console.WriteLine($"ID: {doc.Id}, Content: {doc.Content}");
@@ -146,19 +149,19 @@ namespace PocLineAPI.Presentation.Evaluator
         {
             Log.Debug("Entering ListAllDocumentsAsync method");
             Console.WriteLine("\nListing all documents");
-            
+
             try
             {
                 var documents = await documentService.GetAllDocumentsAsync();
                 Log.Information("Retrieved {Count} documents", documents.Count());
-                
+
                 if (!documents.Any())
                 {
                     Log.Information("No documents found in repository");
                     Console.WriteLine("No documents found.");
                     return;
                 }
-                
+
                 foreach (var doc in documents)
                 {
                     Console.WriteLine($"ID: {doc.Id}, Content: {doc.Content}");

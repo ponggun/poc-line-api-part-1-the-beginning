@@ -4,19 +4,23 @@ using PocLineAPI.Application.Services;
 using PocLineAPI.Infrastructure.Repositories;
 using PocLineAPI.Infrastructure.Services;
 using Serilog;
-using System.IO;
+using PocLineAPI.Presentation.WebApi.Options;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog
-string logDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Logs", DateTime.Now.ToString("yyyyMMddHHmm"));
-Directory.CreateDirectory(logDirectory);
-
+// Configure Serilog to write logs to console and file
 Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .WriteTo.File(Path.Combine(logDirectory, "log.txt"), rollingInterval: RollingInterval.Hour)
+    .MinimumLevel.Information()
+    .WriteTo.Console() 
+    .WriteTo.File(
+        path: "Logs/log-.txt",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 31, // Keep logs for the last 31 days
+        rollOnFileSizeLimit: true,
+        fileSizeLimitBytes: 10_000_000, // Optional: Limit file size (10MB per file)
+        shared: true
+    )
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -30,6 +34,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IEmbeddingService, OpenAIEmbeddingService>();
 builder.Services.AddScoped<IRepository, QdrantRepository>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.Configure<SoftwareOptions>(
+    builder.Configuration.GetSection("Software"));
 
 try
 {
