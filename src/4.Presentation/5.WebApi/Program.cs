@@ -34,8 +34,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IEmbeddingService, OpenAIEmbeddingService>();
 builder.Services.AddScoped<IRepository, QdrantRepository>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
-builder.Services.Configure<SoftwareOptions>(
-    builder.Configuration.GetSection("Software"));
+
+// Prepare options pattern for configuration file
+builder.Services.Configure<SoftwareOptions>(builder.Configuration.GetSection("Software"));
+builder.Services.Configure<LineOptions>(builder.Configuration.GetSection("Line"));
 
 try
 {
