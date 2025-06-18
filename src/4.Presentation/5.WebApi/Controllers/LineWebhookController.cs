@@ -57,7 +57,6 @@ public class LineWebhookController : ControllerBase
             return Unauthorized("Invalid LINE signature.");
         }
 
-        bool isValidTextFormat = false;
         string? replyToken = null;
         if (webhookRequest.Events != null)
         {
@@ -65,26 +64,17 @@ public class LineWebhookController : ControllerBase
             {
                 replyToken = @event.ReplyToken;
 
-                if (@event.Type == "message" && @event.Message != null && @event.Message.Type == "text")
+                _logger.LogInformation("Message: {Body}", @event.Message.Text ?? string.Empty);
+
+                var message = @event.Message.Text;
+                string? uuid = null;
+
+                if (@event.Source != null && @event.Source.Type == "user")
                 {
-                    isValidTextFormat = true;
-                    _logger.LogInformation("Message: {Body}", @event.Message.Text ?? string.Empty);
-
-
-                    var message = @event.Message.Text;
-                    string? uuid = null;
-
-                    if (@event.Source != null && @event.Source.Type == "user")
-                    {
-                        uuid = @event.Source.UserId;
-                    }
+                    uuid = @event.Source.UserId;
                 }
-            }
-        }
 
-        if (!isValidTextFormat && replyToken != null)
-        {
-            throw new ArgumentException("Invalid message format. Only text messages are supported.");
+            }
         }
 
         return Ok(new { Result = $"Done getting web hook" });
