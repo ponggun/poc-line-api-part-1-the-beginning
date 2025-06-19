@@ -44,5 +44,9 @@ namespace PocLineAPI.Presentation.WebApi.Models
                 public string? Data { get; set; }
             }
         }
+        public class TokenResponse
+        {
+            public string access_token { get; set; }
+        }
     }
 }

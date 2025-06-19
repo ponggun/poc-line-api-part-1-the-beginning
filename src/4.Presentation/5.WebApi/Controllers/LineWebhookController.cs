@@ -67,6 +67,8 @@ public class LineWebhookController : ControllerBase
                 if (@event.Message != null)
                 {
                     _logger.LogInformation("Message: {Body}", @event.Message.Text ?? string.Empty);
+
+                    await SendMessage(@event.Message.Text, replyToken);
                 }
                 else
                 {
@@ -114,4 +116,41 @@ public class LineWebhookController : ControllerBase
         return Convert.ToBase64String(hash);
     }
 
+    private async Task<string> LineLogin()
+    {
+        var client = new HttpClient();
+
+        var content = new FormUrlEncodedContent(new[]
+        {
+            new KeyValuePair<string, string>("grant_type", "client_credentials"),
+            new KeyValuePair<string, string>("client_id", _lineOptions.ChannelId),
+            new KeyValuePair<string, string>("client_secret", _lineOptions.ChannelSecret),
+        });
+
+        var response = await client.PostAsync("https://api.line.me/v2/oauth/accessToken", content);
+        var jsonResponse = await response.Content.ReadAsStringAsync();
+
+        // Parse the JSON response to get access_token
+        var tokenResponse = JsonSerializer.Deserialize<LineMessagingAPI.TokenResponse>(jsonResponse);
+
+        return tokenResponse.access_token;
+    }
+    private async Task SendMessage(string message, string replyTokenString)
+    {
+        var accessToken = await LineLogin();
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        var response = await client.PostAsJsonAsync("https://api.line.me/v2/bot/message/reply", new
+        {
+            messages = new[] {
+                new {
+                    type = "text",
+                    text = message
+                }
+            },
+            replyToken = replyTokenString
+        });
+
+        _logger.LogInformation("Response Sent message to line: {Response}", response.Content.ReadAsStringAsync().Result);
+    }
 }
