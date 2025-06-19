@@ -10,7 +10,7 @@ using PocLineAPI.Presentation.WebApi.Models;
 namespace PocLineAPI.Presentation.WebApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class LineWebhookController : ControllerBase
 {
     private readonly ILogger<LineWebhookController> _logger;
@@ -64,14 +64,13 @@ public class LineWebhookController : ControllerBase
             {
                 replyToken = @event.ReplyToken;
 
-                _logger.LogInformation("Message: {Body}", @event.Message.Text ?? string.Empty);
-
-                var message = @event.Message.Text;
-                string? uuid = null;
-
-                if (@event.Source != null && @event.Source.Type == "user")
+                if (@event.Message != null)
                 {
-                    uuid = @event.Source.UserId;
+                    _logger.LogInformation("Message: {Body}", @event.Message.Text ?? string.Empty);
+                }
+                else
+                {
+                    _logger.LogInformation("Message: {Body}", string.Empty);
                 }
 
             }
@@ -106,7 +105,7 @@ public class LineWebhookController : ControllerBase
         return computedSignature == signature;
     }
 
-    private string GenerateSignature(string secret, string body)
+    private static string GenerateSignature(string secret, string body)
     {
         var key = Encoding.UTF8.GetBytes(secret);
         var bodyBytes = Encoding.UTF8.GetBytes(body);
