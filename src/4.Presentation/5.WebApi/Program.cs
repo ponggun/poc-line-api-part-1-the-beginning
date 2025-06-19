@@ -34,6 +34,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IEmbeddingService, OpenAIEmbeddingService>();
 builder.Services.AddScoped<IRepository, QdrantRepository>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<ISignatureService, SignatureService>();
+builder.Services.AddScoped<ILineMessagingService, LineMessagingService>();
 
 // Prepare options pattern for configuration file
 builder.Services.Configure<SoftwareOptions>(builder.Configuration.GetSection("Software"));
@@ -57,7 +59,7 @@ try
 
     app.MapControllers();
 
-    app.Run();
+    await app.RunAsync();
 }
 catch (Exception ex)
 {
@@ -65,5 +67,5 @@ catch (Exception ex)
 }
 finally
 {
-    Log.CloseAndFlush();
+    await Log.CloseAndFlushAsync();
 }

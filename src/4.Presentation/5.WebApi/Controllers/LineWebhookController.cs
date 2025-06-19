@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using System.Text.Json;
 using PocLineAPI.Presentation.WebApi.Options;
 using PocLineAPI.Presentation.WebApi.Models;
+using PocLineAPI.Application.Interfaces;
 
 namespace PocLineAPI.Presentation.WebApi.Controllers;
 
@@ -15,12 +16,15 @@ public class LineWebhookController : ControllerBase
 {
     private readonly ILogger<LineWebhookController> _logger;
     private readonly LineOptions _lineOptions;
+    private readonly ISignatureService _signatureService;
+    private readonly ILineMessagingService _lineMessagingService;
 
-
-    public LineWebhookController(ILogger<LineWebhookController> logger, IOptions<LineOptions> lineOptions)
+    public LineWebhookController(ILogger<LineWebhookController> logger, IOptions<LineOptions> lineOptions, ISignatureService signatureService, ILineMessagingService lineMessagingService)
     {
         _logger = logger;
         _lineOptions = lineOptions.Value;
+        _signatureService = signatureService;
+        _lineMessagingService = lineMessagingService;
     }
 
     [HttpPost("ReceiveHook")]
@@ -51,7 +55,7 @@ public class LineWebhookController : ControllerBase
             return BadRequest("Invalid JSON format.");
         }
 
-        if (string.IsNullOrEmpty(lineSignature) || !VerifySignature(_lineOptions.ChannelSecret, body, lineSignature))
+        if (string.IsNullOrEmpty(lineSignature) || !_signatureService.VerifySignature(_lineOptions.ChannelSecret, body, lineSignature))
         {
             _logger.LogError("Invalid LINE signature.");
             return Unauthorized("Invalid LINE signature.");
@@ -64,11 +68,10 @@ public class LineWebhookController : ControllerBase
             {
                 replyToken = @event.ReplyToken;
 
-                if (@event.Message != null)
+                if (@event.Message != null && !string.IsNullOrEmpty(@event.Message.Text) && !string.IsNullOrEmpty(replyToken))
                 {
-                    _logger.LogInformation("Message: {Body}", @event.Message.Text ?? string.Empty);
-
-                    await SendMessage(@event.Message.Text, replyToken);
+                    _logger.LogInformation("Message: {Body}", @event.Message.Text);
+                    await _lineMessagingService.SendMessageAsync(@event.Message.Text, replyToken);
                 }
                 else
                 {
@@ -87,70 +90,9 @@ public class LineWebhookController : ControllerBase
         using var reader = new StreamReader(Request.Body, Encoding.UTF8);
         var body = await reader.ReadToEndAsync();
 
-        var signature = GenerateSignature(_lineOptions.ChannelSecret, body);
+        var signature = _signatureService.GenerateSignature(_lineOptions.ChannelSecret, body);
         Console.WriteLine("X-Line-Signature: " + signature);
 
         return Ok(new { Signature = signature });
-    }
-
-    private bool VerifySignature(string channelSecret, string requestBody, string? signature)
-    {
-        if (string.IsNullOrEmpty(signature)) return false;
-        var key = Encoding.UTF8.GetBytes(channelSecret);
-        var bodyBytes = Encoding.UTF8.GetBytes(requestBody);
-        using var hmac = new HMACSHA256(key);
-        var hash = hmac.ComputeHash(bodyBytes);
-        var computedSignature = Convert.ToBase64String(hash);
-
-        _logger.LogInformation("Computed Signature: {ComputedSignature}", computedSignature ?? string.Empty);
-
-        return computedSignature == signature;
-    }
-
-    private static string GenerateSignature(string secret, string body)
-    {
-        var key = Encoding.UTF8.GetBytes(secret);
-        var bodyBytes = Encoding.UTF8.GetBytes(body);
-        using var hmac = new HMACSHA256(key);
-        var hash = hmac.ComputeHash(bodyBytes);
-        return Convert.ToBase64String(hash);
-    }
-
-    private async Task<string> LineLogin()
-    {
-        var client = new HttpClient();
-
-        var content = new FormUrlEncodedContent(new[]
-        {
-            new KeyValuePair<string, string>("grant_type", "client_credentials"),
-            new KeyValuePair<string, string>("client_id", _lineOptions.ChannelId),
-            new KeyValuePair<string, string>("client_secret", _lineOptions.ChannelSecret),
-        });
-
-        var response = await client.PostAsync("https://api.line.me/v2/oauth/accessToken", content);
-        var jsonResponse = await response.Content.ReadAsStringAsync();
-
-        // Parse the JSON response to get access_token
-        var tokenResponse = JsonSerializer.Deserialize<LineMessagingAPI.TokenResponse>(jsonResponse);
-
-        return tokenResponse.access_token;
-    }
-    private async Task SendMessage(string message, string replyTokenString)
-    {
-        var accessToken = await LineLogin();
-        var client = new HttpClient();
-        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-        var response = await client.PostAsJsonAsync("https://api.line.me/v2/bot/message/reply", new
-        {
-            messages = new[] {
-                new {
-                    type = "text",
-                    text = message
-                }
-            },
-            replyToken = replyTokenString
-        });
-
-        _logger.LogInformation("Response Sent message to line: {Response}", response.Content.ReadAsStringAsync().Result);
     }
 }
