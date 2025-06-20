@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
 using PocLineAPI.Application.Interfaces;
-using PocLineAPI.Application.Models;
 
 namespace PocLineAPI.Presentation.WebApi.Controllers;
 
@@ -12,14 +10,12 @@ namespace PocLineAPI.Presentation.WebApi.Controllers;
 public class LineWebhookController : ControllerBase
 {
     private readonly ILogger<LineWebhookController> _logger;
-    private readonly PocLineAPI.Application.Models.LineOptions _lineOptions;
-    private readonly ILineMessagingInfraService _LineMessagingInfraService;
+    private readonly IMessagingBusinessService _messagingBusinessService;
 
-    public LineWebhookController(ILogger<LineWebhookController> logger, IOptions<PocLineAPI.Application.Models.LineOptions> lineOptions, ILineMessagingInfraService LineMessagingInfraService)
+    public LineWebhookController(ILogger<LineWebhookController> logger, IMessagingBusinessService messagingBusinessService)
     {
         _logger = logger;
-        _lineOptions = lineOptions.Value;
-        _LineMessagingInfraService = LineMessagingInfraService;
+        _messagingBusinessService = messagingBusinessService;
     }
 
     [HttpPost("ReceiveHook")]
@@ -27,53 +23,28 @@ public class LineWebhookController : ControllerBase
     {
         using var reader = new StreamReader(Request.Body, Encoding.UTF8);
         var body = await reader.ReadToEndAsync();
-
         var lineSignature = Request.Headers["X-Line-Signature"].FirstOrDefault();
         _logger.LogInformation("Received LINE webhook: {Body}", body ?? string.Empty);
         _logger.LogInformation("X-Line-Signature: {Signature}", lineSignature ?? string.Empty);
-
-        var options = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // Ensure correct casing for JSON keys
-            AllowTrailingCommas = true
-        };
 
         if (string.IsNullOrEmpty(body))
         {
             return BadRequest("Request body is empty.");
         }
 
-        var webhookRequest = JsonSerializer.Deserialize<LineMessagingAPI.WebhookRequest>(body, options);
-
-        if (webhookRequest == null)
+        try
         {
-            return BadRequest("Invalid JSON format.");
+            await _messagingBusinessService.HandleWebhookAsync(body, lineSignature);
         }
-
-        if (string.IsNullOrEmpty(lineSignature) || !_LineMessagingInfraService.VerifySignature(_lineOptions.ChannelSecret, body, lineSignature))
+        catch (UnauthorizedAccessException ex)
         {
-            _logger.LogError("Invalid LINE signature.");
+            _logger.LogError(ex, "Invalid LINE signature.");
             return Unauthorized("Invalid LINE signature.");
         }
-
-        string? replyToken = null;
-        if (webhookRequest.Events != null)
+        catch (ArgumentException ex)
         {
-            foreach (var @event in webhookRequest.Events)
-            {
-                replyToken = @event.ReplyToken;
-
-                if (@event.Message != null && !string.IsNullOrEmpty(@event.Message.Text) && !string.IsNullOrEmpty(replyToken))
-                {
-                    _logger.LogInformation("Message: {Body}", @event.Message.Text);
-                    await _LineMessagingInfraService.SendMessageAsync(@event.Message.Text, replyToken);
-                }
-                else
-                {
-                    _logger.LogInformation("Message: {Body}", string.Empty);
-                }
-
-            }
+            _logger.LogError(ex, "Invalid JSON format.");
+            return BadRequest("Invalid JSON format.");
         }
 
         return Ok(new { Result = $"Done getting web hook" });
@@ -84,10 +55,8 @@ public class LineWebhookController : ControllerBase
     {
         using var reader = new StreamReader(Request.Body, Encoding.UTF8);
         var body = await reader.ReadToEndAsync();
-
-        var signature = _LineMessagingInfraService.GenerateSignature(_lineOptions.ChannelSecret, body);
+        var signature = await _messagingBusinessService.GenerateSignatureAsync(body);
         Console.WriteLine("X-Line-Signature: " + signature);
-
         return Ok(new { Signature = signature });
     }
 }

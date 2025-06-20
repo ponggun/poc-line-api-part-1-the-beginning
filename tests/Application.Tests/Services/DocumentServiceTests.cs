@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+using Moq;
 using PocLineAPI.Application.Interfaces;
 using PocLineAPI.Application.Services;
 using PocLineAPI.Domain.Entities;
@@ -9,13 +11,15 @@ namespace PocLineAPI.Application.Tests.Services
     {
         private readonly Mock<IRepository> _mockRepository;
         private readonly Mock<IEmbeddingInfraService> _mockEmbeddingInfraService;
+        private readonly Mock<ILogger<DocumentBusinessService>> _mockLogger;
         private readonly DocumentBusinessService _DocumentBusinessService;
 
         public DocumentBusinessServiceTests()
         {
             _mockRepository = new Mock<IRepository>();
             _mockEmbeddingInfraService = new Mock<IEmbeddingInfraService>();
-            _DocumentBusinessService = new DocumentBusinessService(_mockRepository.Object, _mockEmbeddingInfraService.Object);
+            _mockLogger = new Mock<ILogger<DocumentBusinessService>>();
+            _DocumentBusinessService = new DocumentBusinessService(_mockRepository.Object, _mockEmbeddingInfraService.Object, _mockLogger.Object);
         }
 
         [Fact]

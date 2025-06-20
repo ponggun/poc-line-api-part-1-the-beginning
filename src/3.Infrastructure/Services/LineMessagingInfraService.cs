@@ -29,7 +29,7 @@ public class LineMessagingInfraService : ILineMessagingInfraService
             new KeyValuePair<string, string>("client_id", _lineOptions.ChannelId),
             new KeyValuePair<string, string>("client_secret", _lineOptions.ChannelSecret),
         });
-        var response = await client.PostAsync("https://api.line.me/v2/oauth/accessToken", content);
+        var response = await client.PostAsync($"{_lineOptions.APIBaseUrl}/oauth/accessToken", content);
         var jsonResponse = await response.Content.ReadAsStringAsync();
         var tokenResponse = JsonSerializer.Deserialize<LineMessagingAPI.TokenResponse>(jsonResponse);
         return tokenResponse?.access_token ?? string.Empty;
@@ -40,7 +40,10 @@ public class LineMessagingInfraService : ILineMessagingInfraService
         var accessToken = await LineLoginAsync();
         var client = new HttpClient();
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-        await client.PostAsJsonAsync("https://api.line.me/v2/bot/message/reply", new
+
+        _logger.LogInformation("Sending message: {Message} with reply token: {ReplyToken}", message, replyTokenString);
+
+        await client.PostAsJsonAsync($"{_lineOptions.APIBaseUrl}/bot/message/reply", new
         {
             messages = new[] {
                 new {
@@ -50,27 +53,42 @@ public class LineMessagingInfraService : ILineMessagingInfraService
             },
             replyToken = replyTokenString
         });
-        // Logging can be added here if needed
     }
 
-    public bool VerifySignature(string channelSecret, string requestBody, string? signature)
+    public bool VerifySignature(string requestBody, string? signature)
     {
         if (string.IsNullOrEmpty(signature)) return false;
-        var key = Encoding.UTF8.GetBytes(channelSecret);
+        var key = Encoding.UTF8.GetBytes(_lineOptions.ChannelSecret);
         var bodyBytes = Encoding.UTF8.GetBytes(requestBody);
         using var hmac = new HMACSHA256(key);
         var hash = hmac.ComputeHash(bodyBytes);
         var computedSignature = Convert.ToBase64String(hash);
+
         _logger.LogInformation("Computed Signature: {ComputedSignature}", computedSignature ?? string.Empty);
+
         return computedSignature == signature;
     }
 
-    public string GenerateSignature(string secret, string body)
+    public string GenerateSignature(string body)
     {
-        var key = Encoding.UTF8.GetBytes(secret);
-        var bodyBytes = Encoding.UTF8.GetBytes(body);
+        var bogyGenerated = body ?? string.Empty;
+        if (bogyGenerated == null || string.IsNullOrEmpty(bogyGenerated))
+        {
+            var errorMessage = "Request body is empty. Cannot generate signature.";
+            
+            _logger.LogError(errorMessage);
+            throw new ArgumentException(errorMessage);
+        }
+
+        _logger.LogInformation("Generating signature for body: {Body}", bogyGenerated);
+
+        var key = Encoding.UTF8.GetBytes(_lineOptions.ChannelSecret);
+        var bodyBytes = Encoding.UTF8.GetBytes(bogyGenerated);
         using var hmac = new HMACSHA256(key);
         var hash = hmac.ComputeHash(bodyBytes);
+
+        _logger.LogInformation("Generated Signature: {Signature}", Convert.ToBase64String(hash) ?? string.Empty);
+
         return Convert.ToBase64String(hash);
     }
 }

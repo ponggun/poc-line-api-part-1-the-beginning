@@ -34,6 +34,7 @@ builder.Services.AddScoped<IRepository, QdrantRepository>();
 builder.Services.AddScoped<IDocumentBusinessService, DocumentBusinessService>();
 builder.Services.AddScoped<ILineMessagingInfraService, LineMessagingInfraService>();
 builder.Services.AddScoped<ISoftwareBusinessService, SoftwareBusinessService>();
+builder.Services.AddScoped<IMessagingBusinessService, MessagingBusinessService>();
 
 // Prepare options pattern for configuration file
 builder.Services.Configure<PocLineAPI.Application.Models.SoftwareOptions>(builder.Configuration.GetSection("Software"));
