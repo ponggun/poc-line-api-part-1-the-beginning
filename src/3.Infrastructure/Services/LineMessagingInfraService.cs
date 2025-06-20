@@ -10,11 +10,11 @@ using System.Security.Cryptography;
 
 namespace PocLineAPI.Infrastructure.Services;
 
-public class LineMessagingService : ILineMessagingService
+public class LineMessagingInfraService : ILineMessagingInfraService
 {
     private readonly LineOptions _lineOptions;
-    private readonly ILogger<LineMessagingService> _logger;
-    public LineMessagingService(IOptions<LineOptions> lineOptions, ILogger<LineMessagingService> logger)
+    private readonly ILogger<LineMessagingInfraService> _logger;
+    public LineMessagingInfraService(IOptions<LineOptions> lineOptions, ILogger<LineMessagingInfraService> logger)
     {
         _lineOptions = lineOptions.Value;
         _logger = logger;
@@ -31,7 +31,7 @@ public class LineMessagingService : ILineMessagingService
         });
         var response = await client.PostAsync("https://api.line.me/v2/oauth/accessToken", content);
         var jsonResponse = await response.Content.ReadAsStringAsync();
-        var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(jsonResponse);
+        var tokenResponse = JsonSerializer.Deserialize<LineMessagingAPI.TokenResponse>(jsonResponse);
         return tokenResponse?.access_token ?? string.Empty;
     }
 

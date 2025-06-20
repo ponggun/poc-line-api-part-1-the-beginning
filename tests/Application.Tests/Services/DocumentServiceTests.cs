@@ -5,17 +5,17 @@ using PocLineAPI.Domain.Interfaces;
 
 namespace PocLineAPI.Application.Tests.Services
 {
-    public class DocumentServiceTests
+    public class DocumentBusinessServiceTests
     {
         private readonly Mock<IRepository> _mockRepository;
-        private readonly Mock<IEmbeddingService> _mockEmbeddingService;
-        private readonly DocumentService _documentService;
+        private readonly Mock<IEmbeddingInfraService> _mockEmbeddingInfraService;
+        private readonly DocumentBusinessService _DocumentBusinessService;
 
-        public DocumentServiceTests()
+        public DocumentBusinessServiceTests()
         {
             _mockRepository = new Mock<IRepository>();
-            _mockEmbeddingService = new Mock<IEmbeddingService>();
-            _documentService = new DocumentService(_mockRepository.Object, _mockEmbeddingService.Object);
+            _mockEmbeddingInfraService = new Mock<IEmbeddingInfraService>();
+            _DocumentBusinessService = new DocumentBusinessService(_mockRepository.Object, _mockEmbeddingInfraService.Object);
         }
 
         [Fact]
@@ -29,7 +29,7 @@ namespace PocLineAPI.Application.Tests.Services
                 .ReturnsAsync(expectedDocument);
 
             // Act
-            var result = await _documentService.GetDocumentByIdAsync(testId);
+            var result = await _DocumentBusinessService.GetDocumentByIdAsync(testId);
 
             // Assert
             Assert.Equal(expectedDocument, result);
@@ -50,7 +50,7 @@ namespace PocLineAPI.Application.Tests.Services
                 .ReturnsAsync(expectedDocuments);
 
             // Act
-            var result = await _documentService.GetAllDocumentsAsync();
+            var result = await _DocumentBusinessService.GetAllDocumentsAsync();
 
             // Assert
             Assert.Equal(expectedDocuments, result);
@@ -67,7 +67,7 @@ namespace PocLineAPI.Application.Tests.Services
                 .ReturnsAsync(true);
 
             // Act
-            var result = await _documentService.CreateDocumentAsync(document);
+            var result = await _DocumentBusinessService.CreateDocumentAsync(document);
 
             // Assert
             Assert.True(result);
@@ -84,7 +84,7 @@ namespace PocLineAPI.Application.Tests.Services
                 .ReturnsAsync(true);
 
             // Act
-            var result = await _documentService.UpdateDocumentAsync(document);
+            var result = await _DocumentBusinessService.UpdateDocumentAsync(document);
 
             // Assert
             Assert.True(result);
@@ -101,7 +101,7 @@ namespace PocLineAPI.Application.Tests.Services
                 .ReturnsAsync(true);
 
             // Act
-            var result = await _documentService.DeleteDocumentAsync(testId);
+            var result = await _DocumentBusinessService.DeleteDocumentAsync(testId);
 
             // Assert
             Assert.True(result);
@@ -116,7 +116,7 @@ namespace PocLineAPI.Application.Tests.Services
 
             // Act & Assert
             var exception = await Assert.ThrowsAsync<NotImplementedException>(() => 
-                _documentService.SearchSimilarDocumentsAsync(query));
+                _DocumentBusinessService.SearchSimilarDocumentsAsync(query));
             
             Assert.Equal("Semantic search not yet implemented", exception.Message);
         }

@@ -3,7 +3,7 @@ namespace PocLineAPI.Application.Interfaces
     /// <summary>
     /// Service for creating embeddings from text.
     /// </summary>
-    public interface IEmbeddingService
+    public interface IEmbeddingInfraService
     {
         /// <summary>
         /// Creates a vector embedding from text.

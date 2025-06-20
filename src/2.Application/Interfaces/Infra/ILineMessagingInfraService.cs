@@ -1,6 +1,6 @@
 namespace PocLineAPI.Application.Interfaces;
 
-public interface ILineMessagingService
+public interface ILineMessagingInfraService
 {
     Task<string> LineLoginAsync();
     Task SendMessageAsync(string message, string replyTokenString);

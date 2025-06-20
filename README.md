@@ -18,14 +18,14 @@ The core layer containing business entities and interfaces:
 ### 2. Application Layer
 
 Contains business logic and application-specific interfaces:
-- **Services**: Business logic implementations like `DocumentService`
-- **Interfaces**: Application-specific interfaces like `IDocumentService` and `IEmbeddingService`
+- **Services**: Business logic implementations like `DocumentBusinessService`
+- **Interfaces**: Application-specific interfaces like `IDocumentBusinessService` and `IEmbeddingInfraService`
 
 ### 3. Infrastructure Layer
 
 Implements interfaces defined in the domain and application layers:
 - **Repositories**: Data access implementations like `QdrantRepository`
-- **Services**: External service integrations like `OpenAIEmbeddingService`
+- **Services**: External service integrations like `OpenAIEmbeddingInfraService`
 
 ### 4. Presentation Layer
 

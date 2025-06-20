@@ -4,9 +4,6 @@ using PocLineAPI.Application.Services;
 using PocLineAPI.Infrastructure.Repositories;
 using PocLineAPI.Infrastructure.Services;
 using Serilog;
-using PocLineAPI.Presentation.WebApi.Options;
-using PocLineAPI.Application.Models;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,13 +29,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register application services
-builder.Services.AddScoped<IEmbeddingService, OpenAIEmbeddingService>();
+builder.Services.AddScoped<IEmbeddingInfraService, OpenAIEmbeddingInfraService>();
 builder.Services.AddScoped<IRepository, QdrantRepository>();
-builder.Services.AddScoped<IDocumentService, DocumentService>();
-builder.Services.AddScoped<ILineMessagingService, LineMessagingService>();
+builder.Services.AddScoped<IDocumentBusinessService, DocumentBusinessService>();
+builder.Services.AddScoped<ILineMessagingInfraService, LineMessagingInfraService>();
+builder.Services.AddScoped<ISoftwareBusinessService, SoftwareBusinessService>();
 
 // Prepare options pattern for configuration file
-builder.Services.Configure<SoftwareOptions>(builder.Configuration.GetSection("Software"));
+builder.Services.Configure<PocLineAPI.Application.Models.SoftwareOptions>(builder.Configuration.GetSection("Software"));
 builder.Services.Configure<PocLineAPI.Application.Models.LineOptions>(builder.Configuration.GetSection("Line"));
 
 try

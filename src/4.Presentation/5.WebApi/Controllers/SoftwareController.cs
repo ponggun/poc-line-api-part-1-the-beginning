@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using PocLineAPI.Presentation.WebApi.Options;
+using PocLineAPI.Application.Interfaces;
+using PocLineAPI.Application.Models;
 
 namespace PocLineAPI.Presentation.WebApi.Controllers
 {
@@ -8,17 +8,17 @@ namespace PocLineAPI.Presentation.WebApi.Controllers
     [Route("api/[controller]")]
     public class SoftwareController : ControllerBase
     {
-        private readonly SoftwareOptions _softwareOptions;
+        private readonly ISoftwareBusinessService _SoftwareBusinessService;
 
-        public SoftwareController(IOptions<SoftwareOptions> softwareOptions)
+        public SoftwareController(ISoftwareBusinessService SoftwareBusinessService)
         {
-            _softwareOptions = softwareOptions.Value;
+            _SoftwareBusinessService = SoftwareBusinessService;
         }
 
         [HttpGet("version")]
         public IActionResult GetVersion()
         {
-            return Ok(new { version = _softwareOptions.Version });
+            return Ok(new { version = _SoftwareBusinessService.GetVersion() });
         }
     }
 }

@@ -7,15 +7,15 @@ namespace PocLineAPI.Application.Services
     /// <summary>
     /// Implementation of the document service.
     /// </summary>
-    public class DocumentService : IDocumentService
+    public class DocumentBusinessService : IDocumentBusinessService
     {
         private readonly IRepository _repository;
-        private readonly IEmbeddingService _embeddingService;
+        private readonly IEmbeddingInfraService _EmbeddingInfraService;
 
-        public DocumentService(IRepository repository, IEmbeddingService embeddingService)
+        public DocumentBusinessService(IRepository repository, IEmbeddingInfraService EmbeddingInfraService)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            _embeddingService = embeddingService ?? throw new ArgumentNullException(nameof(embeddingService));
+            _EmbeddingInfraService = EmbeddingInfraService ?? throw new ArgumentNullException(nameof(EmbeddingInfraService));
         }
 
         public async Task<bool> CreateDocumentAsync(Document document)

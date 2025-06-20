@@ -5,12 +5,12 @@ namespace PocLineAPI.Infrastructure.Services
     /// <summary>
     /// Implementation of the embedding service using OpenAI models.
     /// </summary>
-    public class OpenAIEmbeddingService : IEmbeddingService
+    public class OpenAIEmbeddingInfraService : IEmbeddingInfraService
     {
         // In a real implementation, you would inject the OpenAI client
         // private readonly OpenAIClient _client;
 
-        public OpenAIEmbeddingService()
+        public OpenAIEmbeddingInfraService()
         {
             // Initialize the OpenAI client
         }

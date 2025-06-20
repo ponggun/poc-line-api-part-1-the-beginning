@@ -1,4 +1,4 @@
-namespace PocLineAPI.Presentation.WebApi.Options
+namespace PocLineAPI.Application.Models
 {
     public class SoftwareOptions
     {

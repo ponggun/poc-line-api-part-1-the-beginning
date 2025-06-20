@@ -5,7 +5,7 @@ namespace PocLineAPI.Application.Interfaces
     /// <summary>
     /// Service for managing documents.
     /// </summary>
-    public interface IDocumentService
+    public interface IDocumentBusinessService
     {
         Task<Document> GetDocumentByIdAsync(string id);
         Task<IEnumerable<Document>> GetAllDocumentsAsync();
