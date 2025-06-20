@@ -1,12 +1,9 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
-using PocLineAPI.Presentation.WebApi.Options;
-using PocLineAPI.Presentation.WebApi.Models;
 using PocLineAPI.Application.Interfaces;
+using PocLineAPI.Application.Models;
 
 namespace PocLineAPI.Presentation.WebApi.Controllers;
 
@@ -15,16 +12,14 @@ namespace PocLineAPI.Presentation.WebApi.Controllers;
 public class LineWebhookController : ControllerBase
 {
     private readonly ILogger<LineWebhookController> _logger;
-    private readonly LineOptions _lineOptions;
-    private readonly ISignatureService _signatureService;
-    private readonly ILineMessagingService _lineMessagingService;
+    private readonly PocLineAPI.Application.Models.LineOptions _lineOptions;
+    private readonly ILineMessagingService _LineMessagingService;
 
-    public LineWebhookController(ILogger<LineWebhookController> logger, IOptions<LineOptions> lineOptions, ISignatureService signatureService, ILineMessagingService lineMessagingService)
+    public LineWebhookController(ILogger<LineWebhookController> logger, IOptions<PocLineAPI.Application.Models.LineOptions> lineOptions, ILineMessagingService LineMessagingService)
     {
         _logger = logger;
         _lineOptions = lineOptions.Value;
-        _signatureService = signatureService;
-        _lineMessagingService = lineMessagingService;
+        _LineMessagingService = LineMessagingService;
     }
 
     [HttpPost("ReceiveHook")]
@@ -55,7 +50,7 @@ public class LineWebhookController : ControllerBase
             return BadRequest("Invalid JSON format.");
         }
 
-        if (string.IsNullOrEmpty(lineSignature) || !_signatureService.VerifySignature(_lineOptions.ChannelSecret, body, lineSignature))
+        if (string.IsNullOrEmpty(lineSignature) || !_LineMessagingService.VerifySignature(_lineOptions.ChannelSecret, body, lineSignature))
         {
             _logger.LogError("Invalid LINE signature.");
             return Unauthorized("Invalid LINE signature.");
@@ -71,7 +66,7 @@ public class LineWebhookController : ControllerBase
                 if (@event.Message != null && !string.IsNullOrEmpty(@event.Message.Text) && !string.IsNullOrEmpty(replyToken))
                 {
                     _logger.LogInformation("Message: {Body}", @event.Message.Text);
-                    await _lineMessagingService.SendMessageAsync(@event.Message.Text, replyToken);
+                    await _LineMessagingService.SendMessageAsync(@event.Message.Text, replyToken);
                 }
                 else
                 {
@@ -90,7 +85,7 @@ public class LineWebhookController : ControllerBase
         using var reader = new StreamReader(Request.Body, Encoding.UTF8);
         var body = await reader.ReadToEndAsync();
 
-        var signature = _signatureService.GenerateSignature(_lineOptions.ChannelSecret, body);
+        var signature = _LineMessagingService.GenerateSignature(_lineOptions.ChannelSecret, body);
         Console.WriteLine("X-Line-Signature: " + signature);
 
         return Ok(new { Signature = signature });

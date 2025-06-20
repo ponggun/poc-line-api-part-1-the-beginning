@@ -5,6 +5,7 @@ using PocLineAPI.Infrastructure.Repositories;
 using PocLineAPI.Infrastructure.Services;
 using Serilog;
 using PocLineAPI.Presentation.WebApi.Options;
+using PocLineAPI.Application.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,12 +35,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IEmbeddingService, OpenAIEmbeddingService>();
 builder.Services.AddScoped<IRepository, QdrantRepository>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
-builder.Services.AddScoped<ISignatureService, SignatureService>();
 builder.Services.AddScoped<ILineMessagingService, LineMessagingService>();
 
 // Prepare options pattern for configuration file
 builder.Services.Configure<SoftwareOptions>(builder.Configuration.GetSection("Software"));
-builder.Services.Configure<LineOptions>(builder.Configuration.GetSection("Line"));
+builder.Services.Configure<PocLineAPI.Application.Models.LineOptions>(builder.Configuration.GetSection("Line"));
 
 try
 {
