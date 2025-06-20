@@ -1,6 +1,5 @@
-using PocLineAPI.Domain.Entities;
 
-namespace PocLineAPI.Domain.Interfaces
+namespace PocLineAPI.Domain
 {
     /// <summary>
     /// Defines methods for accessing and manipulating data in the repository.

@@ -1,10 +1,7 @@
-using System.Threading.Tasks;
+namespace PocLineAPI.Application;
 
-namespace PocLineAPI.Application.Interfaces
+public interface IMessagingBusinessService
 {
-    public interface IMessagingBusinessService
-    {
-        Task HandleWebhookAsync(string body, string? signature);
-        Task<string> GenerateSignatureAsync(string body);
-    }
+    Task HandleWebhookAsync(string body, string? signature);
+    Task<string> GenerateSignatureAsync(string body);
 }

@@ -1,10 +1,8 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using PocLineAPI.Application.Interfaces;
-using PocLineAPI.Application.Models;
 
-namespace PocLineAPI.Application.Services
-{
+namespace PocLineAPI.Application;
+
     public class MessagingBusinessService : IMessagingBusinessService
     {
         private readonly ILineMessagingInfraService _infraService;
@@ -60,4 +58,3 @@ namespace PocLineAPI.Application.Services
             return Task.FromResult(signature);
         }
     }
-}

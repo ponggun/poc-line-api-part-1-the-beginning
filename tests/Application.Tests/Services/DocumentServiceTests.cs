@@ -1,9 +1,5 @@
 using Microsoft.Extensions.Logging;
-using Moq;
-using PocLineAPI.Application.Interfaces;
-using PocLineAPI.Application.Services;
-using PocLineAPI.Domain.Entities;
-using PocLineAPI.Domain.Interfaces;
+using PocLineAPI.Domain;
 
 namespace PocLineAPI.Application.Tests.Services
 {

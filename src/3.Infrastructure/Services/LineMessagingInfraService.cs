@@ -1,14 +1,12 @@
-using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text;
-using PocLineAPI.Application.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
-using PocLineAPI.Application.Models;
+using PocLineAPI.Application;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
 
-namespace PocLineAPI.Infrastructure.Services;
+namespace PocLineAPI.Infrastructure;
 
 public class LineMessagingInfraService : ILineMessagingInfraService
 {

@@ -1,7 +1,7 @@
-namespace PocLineAPI.Application.Models
+namespace PocLineAPI.Application;
+
+public class SoftwareOptions
 {
-    public class SoftwareOptions
-    {
-        public required string Version { get; set; }
-    }
+    public required string Version { get; set; }
 }
+

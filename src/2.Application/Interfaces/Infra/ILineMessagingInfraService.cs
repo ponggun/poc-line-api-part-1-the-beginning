@@ -1,4 +1,4 @@
-namespace PocLineAPI.Application.Interfaces;
+namespace PocLineAPI.Application;
 
 public interface ILineMessagingInfraService
 {

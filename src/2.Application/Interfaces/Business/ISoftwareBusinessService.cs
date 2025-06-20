@@ -1,7 +1,7 @@
-namespace PocLineAPI.Application.Interfaces
+namespace PocLineAPI.Application;
+
+public interface ISoftwareBusinessService
 {
-    public interface ISoftwareBusinessService
-    {
-        string GetVersion();
-    }
+    string GetVersion();
 }
+

@@ -1,9 +1,6 @@
-using PocLineAPI.Domain.Interfaces;
-using PocLineAPI.Application.Interfaces;
-using PocLineAPI.Application.Services;
-using PocLineAPI.Infrastructure.Repositories;
-using PocLineAPI.Infrastructure.Services;
 using Serilog;
+using PocLineAPI.Application;
+using PocLineAPI.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,17 +25,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Register application services
-builder.Services.AddScoped<IEmbeddingInfraService, OpenAIEmbeddingInfraService>();
-builder.Services.AddScoped<IRepository, QdrantRepository>();
-builder.Services.AddScoped<IDocumentBusinessService, DocumentBusinessService>();
-builder.Services.AddScoped<ILineMessagingInfraService, LineMessagingInfraService>();
-builder.Services.AddScoped<ISoftwareBusinessService, SoftwareBusinessService>();
-builder.Services.AddScoped<IMessagingBusinessService, MessagingBusinessService>();
+// Register application options via extension method
+builder.Services.AddApplicationOptions(builder.Configuration);
 
-// Prepare options pattern for configuration file
-builder.Services.Configure<PocLineAPI.Application.Models.SoftwareOptions>(builder.Configuration.GetSection("Software"));
-builder.Services.Configure<PocLineAPI.Application.Models.LineOptions>(builder.Configuration.GetSection("Line"));
+// Register business services via extension method
+builder.Services.AddBusinessServices();
+
+// Register infra services via extension method
+builder.Services.AddInfraServices();
 
 try
 {

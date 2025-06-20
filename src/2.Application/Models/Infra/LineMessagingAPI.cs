@@ -1,4 +1,4 @@
-namespace PocLineAPI.Application.Models;
+namespace PocLineAPI.Application;
 
 public class LineMessagingAPI
 {

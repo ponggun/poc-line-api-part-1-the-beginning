@@ -1,4 +1,4 @@
-namespace PocLineAPI.Domain.Entities
+namespace PocLineAPI.Domain
 {
     /// <summary>
     /// Represents a document that can be stored and retrieved from the vector database.

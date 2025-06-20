@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
-using Microsoft.Extensions.Options;
-using PocLineAPI.Application.Interfaces;
+using PocLineAPI.Application;
 
-namespace PocLineAPI.Presentation.WebApi.Controllers;
+namespace PocLineAPI.Presentation.WebApi;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -24,6 +23,7 @@ public class LineWebhookController : ControllerBase
         using var reader = new StreamReader(Request.Body, Encoding.UTF8);
         var body = await reader.ReadToEndAsync();
         var lineSignature = Request.Headers["X-Line-Signature"].FirstOrDefault();
+
         _logger.LogInformation("Received LINE webhook: {Body}", body ?? string.Empty);
         _logger.LogInformation("X-Line-Signature: {Signature}", lineSignature ?? string.Empty);
 
@@ -56,7 +56,9 @@ public class LineWebhookController : ControllerBase
         using var reader = new StreamReader(Request.Body, Encoding.UTF8);
         var body = await reader.ReadToEndAsync();
         var signature = await _messagingBusinessService.GenerateSignatureAsync(body);
-        Console.WriteLine("X-Line-Signature: " + signature);
+
+        _logger.LogInformation("X-Line-Signature: " + signature);
+
         return Ok(new { Signature = signature });
     }
 }
