@@ -30,8 +30,13 @@ namespace PocLineAPI.Infrastructure
 
         public async Task UpdateAsync(Document document)
         {
-            _context.Documents.Update(document);
-            await _context.SaveChangesAsync();
+            var existing = await _context.Documents.FindAsync(document.Id);
+            if (existing != null)
+            {
+                existing.Content = document.Content;
+                // ...map property อื่นๆ ถ้ามี
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task DeleteAsync(Guid id)

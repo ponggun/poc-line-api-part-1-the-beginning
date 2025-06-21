@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PocLineAPI.Infrastructure.BackingServices.Postgresql.Migrations
 {
     /// <inheritdoc />
-    public partial class initiated : Migration
+    public partial class Initiated : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

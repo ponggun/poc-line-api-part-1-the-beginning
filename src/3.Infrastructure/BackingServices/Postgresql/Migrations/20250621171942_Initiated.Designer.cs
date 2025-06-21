@@ -12,8 +12,8 @@ using PocLineAPI.Infrastructure;
 namespace PocLineAPI.Infrastructure.BackingServices.Postgresql.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250621165509_initiated")]
-    partial class initiated
+    [Migration("20250621171942_Initiated")]
+    partial class Initiated
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

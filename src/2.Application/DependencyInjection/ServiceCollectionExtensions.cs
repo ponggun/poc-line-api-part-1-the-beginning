@@ -17,6 +17,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<ISoftwareBusinessService, SoftwareBusinessService>();
         services.AddScoped<IMessagingBusinessService, MessagingBusinessService>();
+        services.AddScoped<IDocumentBusinessService, DocumentBusinessService>();
         return services;
     }
 }
