@@ -2,6 +2,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 namespace PocLineAPI.Application;
 
+public interface ISoftwareBusinessService
+{
+    string GetVersion();
+}
+
 public class SoftwareBusinessService : ISoftwareBusinessService
 {
     private readonly SoftwareOptions _softwareOptions;

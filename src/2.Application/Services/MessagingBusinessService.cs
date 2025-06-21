@@ -3,6 +3,12 @@ using Microsoft.Extensions.Logging;
 
 namespace PocLineAPI.Application;
 
+public interface IMessagingBusinessService
+{
+    Task HandleWebhookAsync(string body, string? signature);
+    Task<string> GenerateSignatureAsync(string body);
+}
+
 public class MessagingBusinessService : IMessagingBusinessService
 {
     private readonly ILineMessagingInfraService _infraService;
