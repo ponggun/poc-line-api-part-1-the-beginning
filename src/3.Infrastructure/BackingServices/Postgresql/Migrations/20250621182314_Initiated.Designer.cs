@@ -12,7 +12,7 @@ using PocLineAPI.Infrastructure;
 namespace PocLineAPI.Infrastructure.BackingServices.Postgresql.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250621171942_Initiated")]
+    [Migration("20250621182314_Initiated")]
     partial class Initiated
     {
         /// <inheritdoc />
