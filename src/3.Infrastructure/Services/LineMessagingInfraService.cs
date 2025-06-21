@@ -33,9 +33,8 @@ public class LineMessagingInfraService : ILineMessagingInfraService
         return tokenResponse?.access_token ?? string.Empty;
     }
 
-    public async Task SendMessageAsync(string message, string replyTokenString)
+    public async Task SendMessageAsync(string accessToken, string message, string replyTokenString)
     {
-        var accessToken = await LineLoginAsync();
         var client = new HttpClient();
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
 
@@ -73,7 +72,7 @@ public class LineMessagingInfraService : ILineMessagingInfraService
         if (bogyGenerated == null || string.IsNullOrEmpty(bogyGenerated))
         {
             var errorMessage = "Request body is empty. Cannot generate signature.";
-            
+
             _logger.LogError(errorMessage);
             throw new ArgumentException(errorMessage);
         }
@@ -88,5 +87,19 @@ public class LineMessagingInfraService : ILineMessagingInfraService
         _logger.LogInformation("Generated Signature: {Signature}", Convert.ToBase64String(hash) ?? string.Empty);
 
         return Convert.ToBase64String(hash);
+    }
+
+    public async Task LineLoading(string accessToken, string userId)
+    {
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+
+        _logger.LogInformation("Starting loading for user: {UserId}", userId);
+        
+        await client.PostAsJsonAsync($"{_lineOptions.APIBaseUrl}/bot/chat/loading/start", new
+        {
+            chatId = userId,
+            loadingSeconds = 60,
+        });
     }
 }
