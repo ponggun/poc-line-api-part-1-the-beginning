@@ -1,0 +1,259 @@
+{
+	"info": {
+		"_postman_id": "4d995ad1-f6ea-4250-93c3-778af7f98396",
+		"name": "PocLineAPI.Presentation.WebApi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26015933"
+	},
+	"item": [
+		{
+			"name": "Get Software Version",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/Software/version",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"Software",
+						"version"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Software/version",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Software",
+								"version"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "text",
+					"header": [],
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "Generate Line Signature",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"if(jsonData.signature){",
+							"    pm.collectionVariables.set(\"lineSignature\", jsonData.signature);",
+							"    console.log(\"lineSignature signature stored:\", jsonData.signature);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"destination\": \"xxxxxxxxxx\",\n  \"events\": [\n    {\n      \"type\": \"message\",\n      \"message\": {\n        \"type\": \"text\",\n        \"id\": \"468789577898262530\", // ID of the sent message\n        \"quotedMessageId\": \"468789532432007169\", // ID of the quoted message\n        \"quoteToken\": \"q3Plxr4AgKd...\",\n        \"text\": \"Chicken, please.\" // Text of the sent message\n      },\n      \"webhookEventId\": \"01H810YECXQQZ37VAXPF6H9E6T\",\n      \"deliveryContext\": {\n        \"isRedelivery\": false\n      },\n      \"timestamp\": 1692251666727,\n      \"source\": {\n        \"type\": \"group\",\n        \"groupId\": \"Ca56f94637c...\",\n        \"userId\": \"U4af4980629...\"\n      },\n      \"replyToken\": \"38ef843bde154d9b91c21320ffd17a0f\",\n      \"mode\": \"active\"\n    }\n  ]\n}",
+					"options": {
+						"raw": {
+							"headerFamily": "json",
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/LineWebhook/GenerateSignature",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"LineWebhook",
+						"GenerateSignature"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"destination\": \"Duis incididunt\",\n  \"events\": [\n    {\n      \"type\": \"cillum irure dolor\",\n      \"message\": {\n        \"type\": \"Ut in dolor\",\n        \"id\": \"exercitatio\",\n        \"quoteToken\": \"sunt minim\",\n        \"text\": \"amet sunt sit est in\"\n      },\n      \"webhookEventId\": \"laboris labore nulla\",\n      \"deliveryContext\": {\n        \"isRedelivery\": true\n      },\n      \"timestamp\": 33526752,\n      \"source\": {\n        \"type\": \"nostrud labore reprehenderit proident\",\n        \"userId\": \"cupidatat\"\n      },\n      \"replyToken\": \"dolore dolor ad minim\",\n      \"mode\": \"et dese\",\n      \"postback\": {\n        \"data\": \"nisi dolor consectetur dolore\"\n      }\n    },\n    {\n      \"type\": \"ullamc\",\n      \"message\": {\n        \"type\": \"re\",\n        \"id\": \"enim nisi ipsum\",\n        \"quoteToken\": \"dolor in aliquip adipisicing magna\",\n        \"text\": \"ea\"\n      },\n      \"webhookEventId\": \"id cil\",\n      \"deliveryContext\": {\n        \"isRedelivery\": false\n      },\n      \"timestamp\": 45777602,\n      \"source\": {\n        \"type\": \"mollit do ut\",\n        \"userId\": \"reprehenderit\"\n      },\n      \"replyToken\": \"et\",\n      \"mode\": \"elit cillum dolore irure\",\n      \"postback\": {\n        \"data\": \"Excepteur do m\"\n      }\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/LineWebhook/GenerateSignature",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"LineWebhook",
+								"GenerateSignature"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "text",
+					"header": [],
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "Handle Line Webhook",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-Line-Signature",
+						"value": "{{lineSignature}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"destination\": \"xxxxxxxxxx\",\n  \"events\": [\n    {\n      \"type\": \"message\",\n      \"message\": {\n        \"type\": \"text\",\n        \"id\": \"468789577898262530\", // ID of the sent message\n        \"quotedMessageId\": \"468789532432007169\", // ID of the quoted message\n        \"quoteToken\": \"q3Plxr4AgKd...\",\n        \"text\": \"Chicken, please.\" // Text of the sent message\n      },\n      \"webhookEventId\": \"01H810YECXQQZ37VAXPF6H9E6T\",\n      \"deliveryContext\": {\n        \"isRedelivery\": false\n      },\n      \"timestamp\": 1692251666727,\n      \"source\": {\n        \"type\": \"group\",\n        \"groupId\": \"Ca56f94637c...\",\n        \"userId\": \"U4af4980629...\"\n      },\n      \"replyToken\": \"38ef843bde154d9b91c21320ffd17a0f\",\n      \"mode\": \"active\"\n    }\n  ]\n}",
+					"options": {
+						"raw": {
+							"headerFamily": "json",
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/LineWebhook/ReceiveHook",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"LineWebhook",
+						"ReceiveHook"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "OK",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"destination\": \"Duis incididunt\",\n  \"events\": [\n    {\n      \"type\": \"cillum irure dolor\",\n      \"message\": {\n        \"type\": \"Ut in dolor\",\n        \"id\": \"exercitatio\",\n        \"quoteToken\": \"sunt minim\",\n        \"text\": \"amet sunt sit est in\"\n      },\n      \"webhookEventId\": \"laboris labore nulla\",\n      \"deliveryContext\": {\n        \"isRedelivery\": true\n      },\n      \"timestamp\": 33526752,\n      \"source\": {\n        \"type\": \"nostrud labore reprehenderit proident\",\n        \"userId\": \"cupidatat\"\n      },\n      \"replyToken\": \"dolore dolor ad minim\",\n      \"mode\": \"et dese\",\n      \"postback\": {\n        \"data\": \"nisi dolor consectetur dolore\"\n      }\n    },\n    {\n      \"type\": \"ullamc\",\n      \"message\": {\n        \"type\": \"re\",\n        \"id\": \"enim nisi ipsum\",\n        \"quoteToken\": \"dolor in aliquip adipisicing magna\",\n        \"text\": \"ea\"\n      },\n      \"webhookEventId\": \"id cil\",\n      \"deliveryContext\": {\n        \"isRedelivery\": false\n      },\n      \"timestamp\": 45777602,\n      \"source\": {\n        \"type\": \"mollit do ut\",\n        \"userId\": \"reprehenderit\"\n      },\n      \"replyToken\": \"et\",\n      \"mode\": \"elit cillum dolore irure\",\n      \"postback\": {\n        \"data\": \"Excepteur do m\"\n      }\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/LineWebhook/ReceiveHook",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"LineWebhook",
+								"ReceiveHook"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "text",
+					"header": [],
+					"cookie": [],
+					"body": null
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5030"
+		},
+		{
+			"key": "lineSignature",
+			"value": ""
+		},
+		{
+			"key": "baseUrlTunnel",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
