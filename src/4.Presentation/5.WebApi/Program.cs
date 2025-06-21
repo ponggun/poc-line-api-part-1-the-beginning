@@ -32,7 +32,7 @@ builder.Services.AddApplicationOptions(builder.Configuration);
 builder.Services.AddBusinessServices();
 
 // Register infra services via extension method
-builder.Services.AddInfraServices();
+builder.Services.AddInfraServices(builder.Configuration);
 
 try
 {

@@ -9,12 +9,12 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<SoftwareOptions>(configuration.GetSection("Software"));
         services.Configure<LineOptions>(configuration.GetSection("Line"));
+        services.Configure<PostgresOptions>(configuration.GetSection("Postgres"));
         return services;
     }
 
     public static IServiceCollection AddBusinessServices(this IServiceCollection services)
     {
-        services.AddScoped<IDocumentBusinessService, DocumentBusinessService>();
         services.AddScoped<ISoftwareBusinessService, SoftwareBusinessService>();
         services.AddScoped<IMessagingBusinessService, MessagingBusinessService>();
         return services;

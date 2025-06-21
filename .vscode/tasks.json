@@ -1,31 +1,73 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"label": "0. Docker Compose:up",
-			"type": "shell",
-			"command": "docker compose up",
-			"group": "build",
-			"problemMatcher": []
-		},
-		{
-			"label": "1. Build:all",
-			"type": "shell",
-			"command": "dotnet build PocLineAPI.sln",
-			"group": "build",
-			"problemMatcher": ["$msCompile"]
-		},
-		{
-			"label": "2. Run:webapi",
-			"type": "shell",
-			"command": "dotnet run --project src/4.Presentation/5.WebApi/PocLineAPI.Presentation.WebApi.csproj",
-			"group": "none"
-		},
-		{
-			"label": "3. Test:application",
-			"type": "shell",
-			"command": "dotnet test tests/Application.Tests/PocLineAPI.Application.Tests.csproj",
-			"group": "test"
-		}
-	]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "0. Docker Compose:up",
+      "type": "shell",
+      "command": "docker compose up",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "1. Build:all",
+      "type": "shell",
+      "command": "dotnet build PocLineAPI.sln",
+      "group": "build",
+      "problemMatcher": ["$msCompile"]
+    },
+    {
+      "label": "2. Run:webapi",
+      "type": "shell",
+      "command": "dotnet run --project src/4.Presentation/5.WebApi/PocLineAPI.Presentation.WebApi.csproj",
+      "group": "none"
+    },
+    {
+      "label": "3. Test:application",
+      "type": "shell",
+      "command": "dotnet test tests/Application.Tests/PocLineAPI.Application.Tests.csproj",
+      "group": "test"
+    },
+    {
+      "label": "4. Migration:add",
+      "type": "shell",
+      "command": "dotnet ef migrations add ${input:migrationName} --project src/3.Infrastructure/PocLineAPI.Infrastructure.csproj --output-dir BackingServices/Postgresql/Migrations",
+      "group": "none",
+      "problemMatcher": []
+    },
+	{
+      "label": "5. Migration:apply",
+      "type": "shell",
+      "command": "dotnet ef database update --project src/3.Infrastructure/PocLineAPI.Infrastructure.csproj",
+      "group": "none",
+      "problemMatcher": []
+    },
+    {
+      "label": "6. Migration:remove latest",
+      "type": "shell",
+      "command": "dotnet ef migrations remove --project src/3.Infrastructure/PocLineAPI.Infrastructure.csproj",
+      "group": "none",
+      "problemMatcher": []
+    },
+    {
+      "label": "7. Migration:revert latest",
+      "type": "shell",
+      "command": "dotnet ef database update 0 --project src/3.Infrastructure/PocLineAPI.Infrastructure.csproj",
+      "group": "none",
+      "problemMatcher": []
+    },
+    {
+      "label": "8. Migration:clear all",
+      "type": "shell",
+      "command": "rm -rf src/3.Infrastructure/BackingServices/Postgresql/Migrations/*",
+      "group": "none",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "migrationName",
+      "type": "promptString",
+      "description": "Enter migration name"
+    }
+  ]
 }
