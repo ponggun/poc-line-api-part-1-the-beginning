@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PocLineAPI.Application.Services;
 
 namespace PocLineAPI.Application;
 
@@ -18,6 +19,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISoftwareBusinessService, SoftwareBusinessService>();
         services.AddScoped<IMessagingBusinessService, MessagingBusinessService>();
         services.AddScoped<IDocumentBusinessService, DocumentBusinessService>();
+        services.AddScoped<IWebhookEventBusinessService, WebhookEventBusinessService>();
+        services.AddScoped<IWebhookResponseBusinessService, WebhookResponseBusinessService>();
         return services;
     }
 }

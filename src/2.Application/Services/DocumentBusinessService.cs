@@ -11,6 +11,7 @@ public interface IDocumentBusinessService
     Task AddAsync(Document document);
     Task UpdateAsync(Document document);
     Task DeleteAsync(Guid id);
+    Task<bool> ExistsAsync(Guid id);
 }
 
 public class DocumentBusinessService : IDocumentBusinessService
@@ -55,5 +56,11 @@ public class DocumentBusinessService : IDocumentBusinessService
     {
         await _repository.DeleteAsync(id);
         _logger.LogInformation("Deleted document with id {Id}.", id);
+    }
+
+    public async Task<bool> ExistsAsync(Guid id)
+    {
+        var doc = await _repository.GetByIdAsync(id);
+        return doc != null;
     }
 }

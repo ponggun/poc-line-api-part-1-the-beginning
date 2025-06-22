@@ -27,6 +27,8 @@ public static class ServiceCollectionExtensions
 
             // Register repositories
             services.AddScoped<IDocumentRepository, DocumentRepository>();
+            services.AddScoped<IWebhookEventRepository, WebhookEventRepository>();
+            services.AddScoped<IWebhookResponseRepository, WebhookResponseRepository>();
         }
 
         // Register other infra services

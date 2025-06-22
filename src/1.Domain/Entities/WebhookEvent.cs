@@ -10,9 +10,11 @@ namespace PocLineAPI.Domain
     public class WebhookEvent
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
+        
         [Column(TypeName = "jsonb")]
         public required JsonDocument EventJson { get; set; } // JSONB in DB
+
         public string? EventType { get; set; }
         public bool Processed { get; set; }
         public DateTimeOffset? ProcessedAt { get; set; }
@@ -23,10 +25,10 @@ namespace PocLineAPI.Domain
 
     public interface IWebhookEventRepository
     {
-        Task<WebhookEvent?> GetByIdAsync(int id);
+        Task<WebhookEvent?> GetByIdAsync(Guid id);
         Task<IEnumerable<WebhookEvent>> GetAllAsync();
         Task AddAsync(WebhookEvent webhookEvent);
         Task UpdateAsync(WebhookEvent webhookEvent);
-        Task DeleteAsync(int id);
+        Task DeleteAsync(Guid id);
     }
 }

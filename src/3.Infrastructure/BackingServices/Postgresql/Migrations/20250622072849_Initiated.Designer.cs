@@ -13,8 +13,8 @@ using PocLineAPI.Infrastructure;
 namespace PocLineAPI.Infrastructure.BackingServices.Postgresql.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250622045830_Webhook")]
-    partial class Webhook
+    [Migration("20250622072849_Initiated")]
+    partial class Initiated
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,11 +43,9 @@ namespace PocLineAPI.Infrastructure.BackingServices.Postgresql.Migrations
 
             modelBuilder.Entity("PocLineAPI.Domain.WebhookEvent", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -78,11 +76,9 @@ namespace PocLineAPI.Infrastructure.BackingServices.Postgresql.Migrations
 
             modelBuilder.Entity("PocLineAPI.Domain.WebhookResponse", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ErrorMessage")
                         .HasColumnType("text");
@@ -97,8 +93,8 @@ namespace PocLineAPI.Infrastructure.BackingServices.Postgresql.Migrations
                     b.Property<bool>("Success")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("WebhookEventId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("WebhookEventId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
