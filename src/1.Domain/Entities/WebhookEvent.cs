@@ -11,7 +11,7 @@ namespace PocLineAPI.Domain
     {
         [Key]
         public Guid Id { get; set; }
-        
+
         [Column(TypeName = "jsonb")]
         public required JsonDocument EventJson { get; set; } // JSONB in DB
 
@@ -21,6 +21,9 @@ namespace PocLineAPI.Domain
         public string? ErrorMessage { get; set; }
         public string? LineWebhookEventId { get; set; }
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+        public string? SourceType { get; set; }
+        public string? GroupId { get; set; }
+        public string? UserId { get; set; }
     }
 
     public interface IWebhookEventRepository
