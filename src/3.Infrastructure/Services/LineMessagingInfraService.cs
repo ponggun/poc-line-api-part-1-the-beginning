@@ -27,7 +27,9 @@ public class LineMessagingInfraService : ILineMessagingInfraService
             new KeyValuePair<string, string>("client_id", _lineOptions.ChannelId),
             new KeyValuePair<string, string>("client_secret", _lineOptions.ChannelSecret),
         });
-        var response = await client.PostAsync($"{_lineOptions.APIBaseUrl}/oauth/accessToken", content);
+        
+        // Issue stateless channel access token
+        var response = await client.PostAsync($"{_lineOptions.APIBaseUrl}/oauth2/v3/token", content);
         var jsonResponse = await response.Content.ReadAsStringAsync();
         var tokenResponse = JsonSerializer.Deserialize<LineMessagingAPI.TokenResponse>(jsonResponse);
         return tokenResponse?.access_token ?? string.Empty;
@@ -40,7 +42,7 @@ public class LineMessagingInfraService : ILineMessagingInfraService
 
         _logger.LogInformation("Sending message: {Message} with reply token: {ReplyToken}", message, replyTokenString);
 
-        await client.PostAsJsonAsync($"{_lineOptions.APIBaseUrl}/bot/message/reply", new
+        await client.PostAsJsonAsync($"{_lineOptions.APIBaseUrl}/v2/bot/message/reply", new
         {
             messages = new[] {
                 new {
@@ -96,7 +98,7 @@ public class LineMessagingInfraService : ILineMessagingInfraService
 
         _logger.LogInformation("Starting loading for user: {UserId}", userId);
         
-        await client.PostAsJsonAsync($"{_lineOptions.APIBaseUrl}/bot/chat/loading/start", new
+        await client.PostAsJsonAsync($"{_lineOptions.APIBaseUrl}/v2/bot/chat/loading/start", new
         {
             chatId = userId,
             loadingSeconds = 60,
