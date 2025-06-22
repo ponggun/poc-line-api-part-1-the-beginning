@@ -32,6 +32,7 @@ public class MessagingBusinessService : IMessagingBusinessService
     private readonly ILineMessagingInfraService _lineInfraService;
     private readonly ILogger<MessagingBusinessService> _logger;
     private readonly IWebhookEventBusinessService _webhookEventBusinessService;
+    private readonly IWebhookResponseBusinessService _webhookResponseBusinessService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MessagingBusinessService"/> class.
@@ -39,14 +40,17 @@ public class MessagingBusinessService : IMessagingBusinessService
     /// <param name="lineInfraService">The LINE messaging infrastructure service.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="webhookEventBusinessService">The webhook event business service.</param>
+    /// <param name="webhookResponseBusinessService">The webhook response business service.</param>
     public MessagingBusinessService(
         ILineMessagingInfraService lineInfraService,
         ILogger<MessagingBusinessService> logger,
-        IWebhookEventBusinessService webhookEventBusinessService)
+        IWebhookEventBusinessService webhookEventBusinessService,
+        IWebhookResponseBusinessService webhookResponseBusinessService)
     {
         _lineInfraService = lineInfraService;
         _logger = logger;
         _webhookEventBusinessService = webhookEventBusinessService;
+        _webhookResponseBusinessService = webhookResponseBusinessService;
     }
 
     /// <inheritdoc/>
@@ -125,12 +129,17 @@ public class MessagingBusinessService : IMessagingBusinessService
 
                 await _lineInfraService.SendMessageAsync(accessToken, info.MessageText, info.ReplyToken);
 
+                await RecordWebhookResponse(webhookEvent.Id, info.MessageText, true, null);
+
                 await MarkWebhookEventProcessedAsync(webhookEvent);
             }
             catch (Exception ex)
             {
                 await HandleLineEventErrorAsync(ex, webhookEvent);
-                throw; // Re-throw the exception after logging and updating the event, preserving stack trace
+
+                await RecordWebhookResponse(webhookEvent.Id, info.MessageText, false, ex.Message);
+                
+                throw;
             }
         }
         else
@@ -171,6 +180,19 @@ public class MessagingBusinessService : IMessagingBusinessService
         webhookEvent.ErrorMessage = ex.StackTrace ?? ex.Message;
         // Do not set as processed, just update the event with the error
         await _webhookEventBusinessService.UpdateAsync(webhookEvent);
+    }
+
+    private async Task RecordWebhookResponse(Guid webhookEventId, string response, bool success, string? errorMessage)
+    {
+        await _webhookResponseBusinessService.AddAsync(new WebhookResponse
+        {
+            Id = Guid.NewGuid(),
+            WebhookEventId = webhookEventId,
+            Response = response,
+            Success = success,
+            ErrorMessage = errorMessage,
+            RespondedAt = DateTimeOffset.UtcNow
+        });
     }
 
     private sealed class LineEventInfo
