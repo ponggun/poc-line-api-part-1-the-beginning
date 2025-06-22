@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDocumentBusinessService, DocumentBusinessService>();
         services.AddScoped<IWebhookEventBusinessService, WebhookEventBusinessService>();
         services.AddScoped<IWebhookResponseBusinessService, WebhookResponseBusinessService>();
-        services.AddScoped<IErrorLogService, ErrorLogService>();
+        services.AddScoped<IErrorLogBusinessService, ErrorLogBusinessService>();
         return services;
     }
 }

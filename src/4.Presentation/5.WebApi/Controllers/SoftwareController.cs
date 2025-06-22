@@ -8,12 +8,12 @@ namespace PocLineAPI.Presentation.WebApi;
 public class SoftwareController : ControllerBase
 {
     private readonly ISoftwareBusinessService _SoftwareBusinessService;
-    private readonly IErrorLogService _errorLogService;
+    private readonly IErrorLogBusinessService _errorLogBusinessService;
 
-    public SoftwareController(ISoftwareBusinessService SoftwareBusinessService, IErrorLogService errorLogService)
+    public SoftwareController(ISoftwareBusinessService SoftwareBusinessService, IErrorLogBusinessService ErrorLogBusinessService)
     {
         _SoftwareBusinessService = SoftwareBusinessService;
-        _errorLogService = errorLogService;
+        _errorLogBusinessService = ErrorLogBusinessService;
     }
 
     [HttpGet("version")]
@@ -25,7 +25,7 @@ public class SoftwareController : ControllerBase
         }
         catch (Exception ex)
         {
-            var errorCode = _errorLogService.LogUnexpectedError(ex);
+            var errorCode = _errorLogBusinessService.LogUnexpectedError(ex);
             return StatusCode(500, $"Internal server error. Error Code: {errorCode}");
         }
     }

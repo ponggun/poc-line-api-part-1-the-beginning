@@ -9,12 +9,12 @@ namespace PocLineAPI.Presentation.WebApi;
 public class WebhookResponsesController : ControllerBase
 {
     private readonly IWebhookResponseBusinessService _service;
-    private readonly IErrorLogService _errorLogService;
+    private readonly IErrorLogBusinessService _errorLogBusinessService;
 
-    public WebhookResponsesController(IWebhookResponseBusinessService service, IErrorLogService errorLogService)
+    public WebhookResponsesController(IWebhookResponseBusinessService service, IErrorLogBusinessService ErrorLogBusinessService)
     {
         _service = service;
-        _errorLogService = errorLogService;
+        _errorLogBusinessService = ErrorLogBusinessService;
     }
 
     [HttpGet]
@@ -27,7 +27,7 @@ public class WebhookResponsesController : ControllerBase
         }
         catch (Exception ex)
         {
-            var errorCode = _errorLogService.LogUnexpectedError(ex);
+            var errorCode = _errorLogBusinessService.LogUnexpectedError(ex);
             return StatusCode(500, $"Internal server error. Error Code: {errorCode}");
         }
     }
@@ -44,7 +44,7 @@ public class WebhookResponsesController : ControllerBase
         }
         catch (Exception ex)
         {
-            var errorCode = _errorLogService.LogUnexpectedError(ex);
+            var errorCode = _errorLogBusinessService.LogUnexpectedError(ex);
             return StatusCode(500, $"Internal server error. Error Code: {errorCode}");
         }
     }

@@ -10,13 +10,13 @@ public class LineWebhookController : ControllerBase
 {
     private readonly ILogger<LineWebhookController> _logger;
     private readonly IMessagingBusinessService _messagingBusinessService;
-    private readonly IErrorLogService _errorLogService;
+    private readonly IErrorLogBusinessService _errorLogBusinessService;
 
-    public LineWebhookController(ILogger<LineWebhookController> logger, IMessagingBusinessService messagingBusinessService, IErrorLogService errorLogService)
+    public LineWebhookController(ILogger<LineWebhookController> logger, IMessagingBusinessService messagingBusinessService, IErrorLogBusinessService ErrorLogBusinessService)
     {
         _logger = logger;
         _messagingBusinessService = messagingBusinessService;
-        _errorLogService = errorLogService;
+        _errorLogBusinessService = ErrorLogBusinessService;
     }
 
     [HttpPost("GenerateSignature")]
@@ -52,7 +52,7 @@ public class LineWebhookController : ControllerBase
         }
         catch (Exception ex)
         {
-            var errorCode = _errorLogService.LogUnexpectedError(ex);
+            var errorCode = _errorLogBusinessService.LogUnexpectedError(ex);
             return StatusCode(500, $"Internal server error. Error Code: {errorCode}");
         }
 
