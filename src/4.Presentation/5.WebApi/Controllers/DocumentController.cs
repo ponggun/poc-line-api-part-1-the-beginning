@@ -9,28 +9,46 @@ namespace PocLineAPI.Presentation.WebApi;
 public class DocumentController : ControllerBase
 {
     private readonly IDocumentBusinessService _documentBusinessService;
+    private readonly IErrorLogService _errorLogService;
 
-    public DocumentController(IDocumentBusinessService documentBusinessService)
+    public DocumentController(IDocumentBusinessService documentBusinessService, IErrorLogService errorLogService)
     {
         _documentBusinessService = documentBusinessService;
+        _errorLogService = errorLogService;
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var doc = await _documentBusinessService.GetByIdAsync(id);
-        if (doc == null)
+        try
         {
-            return NotFound();
+            var doc = await _documentBusinessService.GetByIdAsync(id);
+            if (doc == null)
+            {
+                return NotFound();
+            }
+            return Ok(doc);
         }
-        return Ok(doc);
+        catch (Exception ex)
+        {
+            var errorCode = _errorLogService.LogUnexpectedError(ex);
+            return StatusCode(500, $"Internal server error. Error Code: {errorCode}");
+        }
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var docs = await _documentBusinessService.GetAllAsync();
-        return Ok(docs);
+        try
+        {
+            var docs = await _documentBusinessService.GetAllAsync();
+            return Ok(docs);
+        }
+        catch (Exception ex)
+        {
+            var errorCode = _errorLogService.LogUnexpectedError(ex);
+            return StatusCode(500, $"Internal server error. Error Code: {errorCode}");
+        }
     }
 
     [HttpPost]
@@ -40,9 +58,16 @@ public class DocumentController : ControllerBase
         {
             return BadRequest("Document is null.");
         }
-
-        await _documentBusinessService.AddAsync(document);
-        return CreatedAtAction(nameof(GetById), new { id = document.Id }, document);
+        try
+        {
+            await _documentBusinessService.AddAsync(document);
+            return CreatedAtAction(nameof(GetById), new { id = document.Id }, document);
+        }
+        catch (Exception ex)
+        {
+            var errorCode = _errorLogService.LogUnexpectedError(ex);
+            return StatusCode(500, $"Internal server error. Error Code: {errorCode}");
+        }
     }
 
     [HttpPut("{id}")]
@@ -52,22 +77,38 @@ public class DocumentController : ControllerBase
         {
             return BadRequest("Invalid document data.");
         }
-        if (!await _documentBusinessService.ExistsAsync(id))
+        try
         {
-            return NotFound();
+            if (!await _documentBusinessService.ExistsAsync(id))
+            {
+                return NotFound();
+            }
+            await _documentBusinessService.UpdateAsync(document);
+            return NoContent();
         }
-        await _documentBusinessService.UpdateAsync(document);
-        return NoContent();
+        catch (Exception ex)
+        {
+            var errorCode = _errorLogService.LogUnexpectedError(ex);
+            return StatusCode(500, $"Internal server error. Error Code: {errorCode}");
+        }
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        if (!await _documentBusinessService.ExistsAsync(id))
+        try
         {
-            return NotFound();
+            if (!await _documentBusinessService.ExistsAsync(id))
+            {
+                return NotFound();
+            }
+            await _documentBusinessService.DeleteAsync(id);
+            return NoContent();
         }
-        await _documentBusinessService.DeleteAsync(id);
-        return NoContent();
+        catch (Exception ex)
+        {
+            var errorCode = _errorLogService.LogUnexpectedError(ex);
+            return StatusCode(500, $"Internal server error. Error Code: {errorCode}");
+        }
     }
 }

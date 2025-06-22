@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using PocLineAPI.Application.Services;
+using PocLineAPI.Application;
 using PocLineAPI.Domain;
 
 namespace PocLineAPI.Presentation.WebApi;
@@ -9,33 +9,59 @@ namespace PocLineAPI.Presentation.WebApi;
 public class WebhookEventsController : ControllerBase
 {
     private readonly IWebhookEventBusinessService _service;
+    private readonly IErrorLogService _errorLogService;
 
-    public WebhookEventsController(IWebhookEventBusinessService service)
+    public WebhookEventsController(IWebhookEventBusinessService service, IErrorLogService errorLogService)
     {
         _service = service;
+        _errorLogService = errorLogService;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<WebhookEvent>>> GetAll()
     {
-        var events = await _service.GetAllAsync();
-        return Ok(events);
+        try
+        {
+            var events = await _service.GetAllAsync();
+            return Ok(events);
+        }
+        catch (Exception ex)
+        {
+            var errorCode = _errorLogService.LogUnexpectedError(ex);
+            return StatusCode(500, $"Internal server error. Error Code: {errorCode}");
+        }
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<WebhookEvent>> GetById(Guid id)
     {
-        var webhookEvent = await _service.GetByIdAsync(id);
-        if (webhookEvent == null)
-            return NotFound();
-        return Ok(webhookEvent);
+        try
+        {
+            var webhookEvent = await _service.GetByIdAsync(id);
+            if (webhookEvent == null)
+                return NotFound();
+            return Ok(webhookEvent);
+        }
+        catch (Exception ex)
+        {
+            var errorCode = _errorLogService.LogUnexpectedError(ex);
+            return StatusCode(500, $"Internal server error. Error Code: {errorCode}");
+        }
     }
 
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] WebhookEvent webhookEvent)
     {
-        var created = await _service.AddAsync(webhookEvent);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        try
+        {
+            var created = await _service.AddAsync(webhookEvent);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        }
+        catch (Exception ex)
+        {
+            var errorCode = _errorLogService.LogUnexpectedError(ex);
+            return StatusCode(500, $"Internal server error. Error Code: {errorCode}");
+        }
     }
 
     [HttpPut("{id}")]
@@ -43,20 +69,36 @@ public class WebhookEventsController : ControllerBase
     {
         if (id != webhookEvent.Id)
             return BadRequest();
-        if (!await _service.ExistsAsync(id))
-            return NotFound();
-        var updated = await _service.UpdateAsync(webhookEvent);
-        if (!updated) return NotFound();
-        return NoContent();
+        try
+        {
+            if (!await _service.ExistsAsync(id))
+                return NotFound();
+            var updated = await _service.UpdateAsync(webhookEvent);
+            if (!updated) return NotFound();
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            var errorCode = _errorLogService.LogUnexpectedError(ex);
+            return StatusCode(500, $"Internal server error. Error Code: {errorCode}");
+        }
     }
 
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {
-        if (!await _service.ExistsAsync(id))
-            return NotFound();
-        var deleted = await _service.DeleteAsync(id);
-        if (!deleted) return NotFound();
-        return NoContent();
+        try
+        {
+            if (!await _service.ExistsAsync(id))
+                return NotFound();
+            var deleted = await _service.DeleteAsync(id);
+            if (!deleted) return NotFound();
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            var errorCode = _errorLogService.LogUnexpectedError(ex);
+            return StatusCode(500, $"Internal server error. Error Code: {errorCode}");
+        }
     }
 }

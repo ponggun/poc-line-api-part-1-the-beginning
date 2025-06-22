@@ -1,6 +1,5 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using PocLineAPI.Application.Services;
 using PocLineAPI.Domain;
 
 namespace PocLineAPI.Application;
@@ -110,41 +109,81 @@ public class MessagingBusinessService : IMessagingBusinessService
 
     private async Task ProcessLineEventAsync(LineMessagingAPI.WebhookRequest.Event lineEvent, string accessToken)
     {
-        var messageText = lineEvent.Message?.Text;
-        var replyToken = lineEvent.ReplyToken;
-        var sourceType = lineEvent.Source?.Type;
-        var groupId = lineEvent.Source?.GroupId;
-        var userId = lineEvent.Source?.UserId;
+        // Record the webhook event
+       var webhookEvent = await RecordWebhookEventFromLineEvent(lineEvent);
 
-        // Map lineEvent to domain WebhookEvent entity
+        // Extract relevant information from the event using a helper class
+        var info = new LineEventInfo(lineEvent);
+
+        // If the event contains a message, reply token, and user ID, send a response
+        // Otherwise, log the event without processing
+        if (!string.IsNullOrEmpty(info.MessageText) && !string.IsNullOrEmpty(info.ReplyToken) && !string.IsNullOrEmpty(info.UserId))
+        {
+            try
+            {
+                await _lineInfraService.LineLoading(accessToken, info.UserId);
+
+                await _lineInfraService.SendMessageAsync(accessToken, info.MessageText, info.ReplyToken);
+
+                await MarkWebhookEventProcessedAsync(webhookEvent);
+            }
+            catch (Exception ex)
+            {
+                await HandleLineEventErrorAsync(ex, webhookEvent);
+                throw; // Re-throw the exception after logging and updating the event, preserving stack trace
+            }
+        }
+        else
+        {
+            _logger.LogInformation("Received event without message or reply token: {Event}", JsonSerializer.Serialize(lineEvent));
+        }
+    }
+
+    private async Task<WebhookEvent> RecordWebhookEventFromLineEvent(LineMessagingAPI.WebhookRequest.Event lineEvent)
+    {
+        var source = lineEvent.Source;
         var webhookEvent = new WebhookEvent
         {
-            Id = Guid.NewGuid(),
             EventJson = JsonDocument.Parse(JsonSerializer.Serialize(lineEvent)),
             EventType = lineEvent.Type,
             CreatedAt = DateTimeOffset.UtcNow,
             Processed = false,
             LineWebhookEventId = lineEvent.WebhookEventId,
-            SourceType = sourceType,
-            GroupId = groupId,
-            UserId = userId
+            SourceType = source?.Type,
+            GroupId = source?.GroupId,
+            UserId = source?.UserId
         };
-        await _webhookEventBusinessService.AddAsync(webhookEvent);
 
-        if (!string.IsNullOrEmpty(messageText) && !string.IsNullOrEmpty(replyToken) && userId != null)
+        return await _webhookEventBusinessService.AddAsync(webhookEvent);
+    }
+
+    private async Task MarkWebhookEventProcessedAsync(WebhookEvent webhookEvent)
+    {
+        webhookEvent.Processed = true;
+        webhookEvent.ProcessedAt = DateTimeOffset.UtcNow;
+        
+        await _webhookEventBusinessService.UpdateAsync(webhookEvent);
+    }
+
+    private async Task HandleLineEventErrorAsync(Exception ex, WebhookEvent webhookEvent)
+    {
+        _logger.LogError(ex, "Error processing LINE event");
+        webhookEvent.ErrorMessage = ex.StackTrace ?? ex.Message;
+        // Do not set as processed, just update the event with the error
+        await _webhookEventBusinessService.UpdateAsync(webhookEvent);
+    }
+
+    private sealed class LineEventInfo
+    {
+        public string? MessageText { get; }
+        public string? ReplyToken { get; }
+        public string? UserId { get; }
+
+        public LineEventInfo(LineMessagingAPI.WebhookRequest.Event lineEvent)
         {
-            await _lineInfraService.LineLoading(accessToken, userId);
-            _logger.LogInformation(
-                "Received message: {Message} from user: {UserId} with reply token: {ReplyToken}",
-                (object)(messageText ?? string.Empty),
-                (object)(userId ?? string.Empty),
-                (object)(replyToken ?? string.Empty)
-            );
-            await _lineInfraService.SendMessageAsync(accessToken, messageText, replyToken);
-        }
-        else
-        {
-            _logger.LogInformation("Received event without message or reply token: {Event}", (object)JsonSerializer.Serialize(lineEvent));
+            MessageText = lineEvent.Message?.Text;
+            ReplyToken = lineEvent.ReplyToken;
+            UserId = lineEvent.Source?.UserId;
         }
     }
 }

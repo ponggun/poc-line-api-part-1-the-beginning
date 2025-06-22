@@ -10,11 +10,25 @@ public class LineWebhookController : ControllerBase
 {
     private readonly ILogger<LineWebhookController> _logger;
     private readonly IMessagingBusinessService _messagingBusinessService;
+    private readonly IErrorLogService _errorLogService;
 
-    public LineWebhookController(ILogger<LineWebhookController> logger, IMessagingBusinessService messagingBusinessService)
+    public LineWebhookController(ILogger<LineWebhookController> logger, IMessagingBusinessService messagingBusinessService, IErrorLogService errorLogService)
     {
         _logger = logger;
         _messagingBusinessService = messagingBusinessService;
+        _errorLogService = errorLogService;
+    }
+
+    [HttpPost("GenerateSignature")]
+    public async Task<IActionResult> GenerateSignature()
+    {
+        using var reader = new StreamReader(Request.Body, Encoding.UTF8);
+        var body = await reader.ReadToEndAsync();
+        var signature = await _messagingBusinessService.GenerateSignatureAsync(body);
+
+        _logger.LogInformation("X-Line-Signature: " + signature);
+
+        return Ok(new { Signature = signature });
     }
 
     [HttpPost("ReceiveHook")]
@@ -36,29 +50,12 @@ public class LineWebhookController : ControllerBase
         {
             await _messagingBusinessService.HandleWebhookAsync(body, lineSignature);
         }
-        catch (UnauthorizedAccessException ex)
+        catch (Exception ex)
         {
-            _logger.LogError(ex, "Invalid LINE signature.");
-            return Unauthorized("Invalid LINE signature.");
-        }
-        catch (ArgumentException ex)
-        {
-            _logger.LogError(ex, "Invalid JSON format.");
-            return BadRequest("Invalid JSON format.");
+            var errorCode = _errorLogService.LogUnexpectedError(ex);
+            return StatusCode(500, $"Internal server error. Error Code: {errorCode}");
         }
 
         return Ok(new { Result = $"Done getting web hook" });
-    }
-
-    [HttpPost("GenerateSignature")]
-    public async Task<IActionResult> GenerateSignature()
-    {
-        using var reader = new StreamReader(Request.Body, Encoding.UTF8);
-        var body = await reader.ReadToEndAsync();
-        var signature = await _messagingBusinessService.GenerateSignatureAsync(body);
-
-        _logger.LogInformation("X-Line-Signature: " + signature);
-
-        return Ok(new { Signature = signature });
     }
 }
