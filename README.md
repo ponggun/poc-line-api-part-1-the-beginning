@@ -2,8 +2,8 @@
 
 This project demonstrates the implementation of a semantic search application using Qdrant vector database with Clean Architecture principles.
 
-- [Blog]()
-- [Video]()
+- [Blog](https://medium.com/t-t-software-solution/%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2-line-messaging-api-%E0%B8%94%E0%B9%89%E0%B8%A7%E0%B8%A2-net-f00a7e887a0b)
+- [Video](https://youtu.be/R24-6j9cnsQ)
 
 ## Clean Architecture Structure
 
