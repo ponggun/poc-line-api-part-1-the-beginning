@@ -31,7 +31,7 @@ Implements interfaces defined in the domain and application layers:
 
 User interface implementations:
 - **WebAPI**: RESTful API endpoints for programmatic access
-- **WebApp**: Browser-based user interface using MVC
+- **WebUI**: Modern responsive web interface using ASP.NET Core MVC and Bootstrap
 - **Evaluator**: Console application for testing and evaluation
 
 ## Dependencies
@@ -61,7 +61,7 @@ flowchart TD
 
     subgraph Presentation
         P1[WebApi]
-        P2[WebApp]
+        P2[WebUI]
         P3[Evaluator]
     end
 
@@ -89,6 +89,34 @@ flowchart TD
 2. Clone the repository
 3. Build the solution: `dotnet build`
 4. Run desired presentation layer:
-   - Web API: `dotnet run --project src/Presentation/WebApi`
-   - Web App: `dotnet run --project src/Presentation/WebApp`
+   - Web API: `dotnet run --project src/4.Presentation/5.WebApi`
+   - Web UI: `dotnet run --project src/4.Presentation/6.WebUI`
    - Evaluator: `dotnet run --project src/Presentation/Evaluator`
+
+### Running the Complete System
+
+To run both API and Web UI together:
+
+1. **Start the Web API first:**
+   ```bash
+   dotnet run --project src/4.Presentation/5.WebApi
+   ```
+   This will start the API at `https://localhost:7116`
+
+2. **Start the Web UI in a separate terminal:**
+   ```bash
+   dotnet run --project src/4.Presentation/6.WebUI
+   ```
+   This will start the Web UI at `https://localhost:7111`
+
+3. **Access the Web UI:**
+   Open your browser and navigate to `https://localhost:7111` to access the responsive web interface for document management.
+
+### Web UI Features
+
+The Web UI provides a complete responsive interface with:
+- **Document Management**: Full CRUD operations (Create, Read, Update, Delete)
+- **Bootstrap 5 Design**: Modern, responsive layout that works on all devices
+- **Real-time API Integration**: Communicates with the Web API via HTTP calls
+- **User Feedback**: Success/error messages for all operations
+- **Mobile Responsive**: Optimized for desktop, tablet, and mobile devices

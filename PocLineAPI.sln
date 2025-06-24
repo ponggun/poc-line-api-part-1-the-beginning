@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9A19103F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PocLineAPI.Application.Tests", "tests\Application.Tests\PocLineAPI.Application.Tests.csproj", "{85AB5B1F-2C9F-4ED0-8D96-F4397CF05567}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PocLineAPI.Presentation.WebUI.Tests", "tests\WebUI.Tests\PocLineAPI.Presentation.WebUI.Tests.csproj", "{75AB5B1F-2C9F-4ED0-8D96-F4397CF05568}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{85AB5B1F-2C9F-4ED0-8D96-F4397CF05567}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85AB5B1F-2C9F-4ED0-8D96-F4397CF05567}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{85AB5B1F-2C9F-4ED0-8D96-F4397CF05567}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75AB5B1F-2C9F-4ED0-8D96-F4397CF05568}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75AB5B1F-2C9F-4ED0-8D96-F4397CF05568}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75AB5B1F-2C9F-4ED0-8D96-F4397CF05568}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75AB5B1F-2C9F-4ED0-8D96-F4397CF05568}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -63,5 +69,6 @@ Global
 		{8DBE7712-0137-458A-9471-C4B6C2B03434} = {409F4F13-523F-4855-9B3D-16F5B6D70B0F}
 		{9ABE7713-0138-459A-9472-C4B6C2B03435} = {409F4F13-523F-4855-9B3D-16F5B6D70B0F}
 		{85AB5B1F-2C9F-4ED0-8D96-F4397CF05567} = {9A19103F-16F7-4668-BE54-9A1E7A4F7556}
+		{75AB5B1F-2C9F-4ED0-8D96-F4397CF05568} = {9A19103F-16F7-4668-BE54-9A1E7A4F7556}
 	EndGlobalSection
 EndGlobal
