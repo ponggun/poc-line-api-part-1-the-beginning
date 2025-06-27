@@ -22,6 +22,12 @@
       "group": "none"
     },
     {
+      "label": "2. Run:webui",
+      "type": "shell",
+      "command": "dotnet run --project src/4.Presentation/6.WebUI/PocLineAPI.Presentation.WebUI.csproj",
+      "group": "none"
+    },
+    {
       "label": "3. Test:application",
       "type": "shell",
       "command": "dotnet test tests/Application.Tests/PocLineAPI.Application.Tests.csproj",

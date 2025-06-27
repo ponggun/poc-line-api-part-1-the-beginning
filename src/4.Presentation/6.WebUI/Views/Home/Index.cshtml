@@ -2,7 +2,52 @@
     ViewData["Title"] = "Home Page";
 }
 
+<style>
+  .message {
+    padding: 10px;
+    background: #ddd;
+  }
+</style>
+
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+<div id="lineprofile" style="display: none;">
+  <img width="100px" id="profileImage" src="" />
+  <div>
+    Hello <b><span id="profileName">Name</span></b>
+  </div>
+  <div>UID <span id="profileUID">UID</span></div>
+</div>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script>
+  let userId = "";
+
+  const logOut = () => {
+    liff.logout();
+    window.location.reload();
+  };
+  const main = async () => {
+    await liff.init({ liffId: "2007631496-J0jqbqx3" });
+    if (liff.isLoggedIn()) {
+      const profile = await liff.getProfile();
+
+      // update profile
+      profileImage.src = profile.pictureUrl;
+      profileName.innerText = profile.displayName;
+      profileUID.innerText = profile.userId;
+
+      // collect userId
+      userId = profile.userId;
+
+      // show profile
+      lineprofile.style.display = "block";
+    } else {
+      liff.login();
+    }
+  };
+  main();
+</script>
